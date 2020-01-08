@@ -11,7 +11,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 10
       matrix:
         go: ['1.13']
     env:
@@ -27,5 +26,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Tests
+      - name: Run tests
         run: make test
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+        if: always()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: build/coverage.txt
