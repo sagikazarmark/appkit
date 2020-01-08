@@ -1,7 +1,7 @@
-# Go Kit eXtensions
+# Go Application Kit
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/sagikazarmark/appkit/CI?style=flat-square)
-[![Coverage](https://gocover.io/_badge/github.com/sagikazarmark/appkit)](https://gocover.io/github.com/sagikazarmark/appkit)
+[![Codecov](https://img.shields.io/codecov/c/github/sagikazarmark/appkit?style=flat-square)](https://codecov.io/gh/sagikazarmark/appkit)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sagikazarmark/appkit?style=flat-square)](https://goreportcard.com/report/github.com/sagikazarmark/appkit)
 [![GolangCI](https://golangci.com/badges/github.com/sagikazarmark/appkit.svg)](https://golangci.com/r/github.com/sagikazarmark/appkit)
 ![Go Version](https://img.shields.io/badge/go%20version-%3E=1.13-61CFDD.svg?style=flat-square)
