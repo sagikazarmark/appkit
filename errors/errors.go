@@ -25,3 +25,47 @@ func IsClientError(err error) bool {
 
 	return false
 }
+
+type notFound interface {
+	NotFound() bool
+}
+
+// IsNotFoundError checks if an error is related to a resource being not found.
+// An error is considered to be a NotFound error if it implements the following interface:
+//
+// 	type notFound interface {
+// 		NotFound() bool
+// 	}
+//
+// and `NotFound` returns true.
+func IsNotFoundError(err error) bool {
+	var e notFound
+
+	if errors.As(err, &e) {
+		return e.NotFound()
+	}
+
+	return false
+}
+
+type validation interface {
+	Validation() bool
+}
+
+// IsValidationError checks if an error is related to a resource being not found.
+// An error is considered to be a Validation error if it implements the following interface:
+//
+// 	type validation interface {
+// 		Validation() bool
+// 	}
+//
+// and `Validation` returns true.
+func IsValidationError(err error) bool {
+	var e validation
+
+	if errors.As(err, &e) {
+		return e.Validation()
+	}
+
+	return false
+}
