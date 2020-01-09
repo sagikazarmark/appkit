@@ -1,6 +1,9 @@
 package endpoint
 
 import (
+	"context"
+	"time"
+
 	"github.com/go-kit/kit/endpoint"
 	kitxendpoint "github.com/sagikazarmark/kitx/endpoint"
 
@@ -26,4 +29,21 @@ func (fn errorMatcherFunc) MatchError(err error) bool {
 // and `ClientError` returns true.
 func ClientErrorMiddleware(e endpoint.Endpoint) endpoint.Endpoint {
 	return kitxendpoint.FailerMiddleware(errorMatcherFunc(errors.IsClientError))(e)
+}
+
+// LoggingMiddleware logs trace information about every request.
+func LoggingMiddleware(logger Logger) endpoint.Middleware {
+	return func(e endpoint.Endpoint) endpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (interface{}, error) {
+			logger.TraceContext(ctx, "processing request")
+
+			defer func(begin time.Time) {
+				logger.TraceContext(ctx, "processing request finished", map[string]interface{}{
+					"took": time.Since(begin),
+				})
+			}(time.Now())
+
+			return e(ctx, request)
+		}
+	}
 }
