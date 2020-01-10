@@ -69,3 +69,47 @@ func IsValidationError(err error) bool {
 
 	return false
 }
+
+type badRequest interface {
+	BadRequest() bool
+}
+
+// IsBadRequestError checks if an error is related to a resource being not found.
+// An error is considered to be a BadRequest error if it implements the following interface:
+//
+// 	type badRequest interface {
+// 		BadRequest() bool
+// 	}
+//
+// and `BadRequest` returns true.
+func IsBadRequestError(err error) bool {
+	var e badRequest
+
+	if errors.As(err, &e) {
+		return e.BadRequest()
+	}
+
+	return false
+}
+
+type conflict interface {
+	Conflict() bool
+}
+
+// IsConflictError checks if an error is related to a resource being not found.
+// An error is considered to be a Conflict error if it implements the following interface:
+//
+// 	type conflict interface {
+// 		Conflict() bool
+// 	}
+//
+// and `Conflict` returns true.
+func IsConflictError(err error) bool {
+	var e conflict
+
+	if errors.As(err, &e) {
+		return e.Conflict()
+	}
+
+	return false
+}

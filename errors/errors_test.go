@@ -50,6 +50,51 @@ func TestIsClientError(t *testing.T) {
 	})
 }
 
+type notFoundStub struct{}
+
+func (notFoundStub) Error() string {
+	return ""
+}
+
+func (notFoundStub) NotFound() bool {
+	return true
+}
+
+type nonNotFoundStub struct{}
+
+func (c nonNotFoundStub) Error() string {
+	return ""
+}
+
+func (c nonNotFoundStub) NotFound() bool {
+	return false
+}
+
+func TestIsNotFoundError(t *testing.T) {
+	t.Run("NotFound", func(t *testing.T) {
+		if !IsNotFoundError(notFoundStub{}) {
+			t.Error("error is supposed to be a NotFound error")
+		}
+	})
+
+	t.Run("NonNotFound", func(t *testing.T) {
+		tests := []error{
+			errors.New("error"),
+			nonNotFoundStub{},
+		}
+
+		for _, err := range tests {
+			err := err
+
+			t.Run("", func(t *testing.T) {
+				if IsNotFoundError(err) {
+					t.Error("error is NOT supposed to be a NotFound error")
+				}
+			})
+		}
+	})
+}
+
 type validationStub struct{}
 
 func (validationStub) Error() string {
@@ -95,45 +140,90 @@ func TestIsValidationError(t *testing.T) {
 	})
 }
 
-type notFoundStub struct{}
+type badRequestStub struct{}
 
-func (notFoundStub) Error() string {
+func (badRequestStub) Error() string {
 	return ""
 }
 
-func (notFoundStub) NotFound() bool {
+func (badRequestStub) BadRequest() bool {
 	return true
 }
 
-type nonNotFoundStub struct{}
+type nonBadRequestStub struct{}
 
-func (c nonNotFoundStub) Error() string {
+func (c nonBadRequestStub) Error() string {
 	return ""
 }
 
-func (c nonNotFoundStub) NotFound() bool {
+func (c nonBadRequestStub) BadRequest() bool {
 	return false
 }
 
-func TestIsNotFoundError(t *testing.T) {
-	t.Run("NotFound", func(t *testing.T) {
-		if !IsNotFoundError(notFoundStub{}) {
-			t.Error("error is supposed to be a NotFound error")
+func TestIsBadRequestError(t *testing.T) {
+	t.Run("BadRequest", func(t *testing.T) {
+		if !IsBadRequestError(badRequestStub{}) {
+			t.Error("error is supposed to be a BadRequest error")
 		}
 	})
 
-	t.Run("NonNotFound", func(t *testing.T) {
+	t.Run("NonBadRequest", func(t *testing.T) {
 		tests := []error{
 			errors.New("error"),
-			nonNotFoundStub{},
+			nonBadRequestStub{},
 		}
 
 		for _, err := range tests {
 			err := err
 
 			t.Run("", func(t *testing.T) {
-				if IsNotFoundError(err) {
-					t.Error("error is NOT supposed to be a NotFound error")
+				if IsBadRequestError(err) {
+					t.Error("error is NOT supposed to be a BadRequest error")
+				}
+			})
+		}
+	})
+}
+
+type conflictStub struct{}
+
+func (conflictStub) Error() string {
+	return ""
+}
+
+func (conflictStub) Conflict() bool {
+	return true
+}
+
+type nonConflictStub struct{}
+
+func (c nonConflictStub) Error() string {
+	return ""
+}
+
+func (c nonConflictStub) Conflict() bool {
+	return false
+}
+
+func TestIsConflictError(t *testing.T) {
+	t.Run("Conflict", func(t *testing.T) {
+		if !IsConflictError(conflictStub{}) {
+			t.Error("error is supposed to be a Conflict error")
+		}
+	})
+
+	t.Run("NonConflict", func(t *testing.T) {
+		tests := []error{
+			errors.New("error"),
+			nonConflictStub{},
+		}
+
+		for _, err := range tests {
+			err := err
+
+			t.Run("", func(t *testing.T) {
+				if IsConflictError(err) {
+					t.Error("error is NOT supposed to be a Conflict error")
 				}
 			})
 		}
