@@ -46,7 +46,7 @@ func (s matcherConverterStub) MatchError(err error) bool {
 	return s.err == err
 }
 
-func (s matcherConverterStub) NewProblem(_ context.Context, _ error) problems.Problem {
+func (s matcherConverterStub) NewProblem(_ context.Context, _ error) interface{} {
 	return problems.NewDetailedProblem(http.StatusServiceUnavailable, "my error")
 }
 
@@ -67,7 +67,7 @@ type statusMatcherConverterStub struct {
 	statusMatcherStub
 }
 
-func (s statusMatcherConverterStub) NewProblem(_ context.Context, _ error) problems.Problem {
+func (s statusMatcherConverterStub) NewProblem(_ context.Context, _ error) interface{} {
 	return problems.NewDetailedProblem(http.StatusBadRequest, "custom error")
 }
 

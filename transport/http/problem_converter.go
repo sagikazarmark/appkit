@@ -11,7 +11,8 @@ import (
 // ProblemConverter creates a new RFC-7807 Problem from an error.
 type ProblemConverter interface {
 	// NewProblem creates a new RFC-7807 Problem from an error.
-	NewProblem(ctx context.Context, err error) problems.Problem
+	// A problem can be any structure that marshals to an RFC-7807 compatible JSON/XML structure.
+	NewProblem(ctx context.Context, err error) interface{}
 }
 
 // ErrorMatcher checks if an error matches a predefined set of conditions.
@@ -26,6 +27,11 @@ type ErrorMatcherFunc func(err error) bool
 // MatchError calls the underlying function to check if err matches a certain condition.
 func (fn ErrorMatcherFunc) MatchError(err error) bool {
 	return fn(err)
+}
+
+// StatusProblem is the interface describing a problem with an associated Status code.
+type StatusProblem interface {
+	ProblemStatus() int
 }
 
 // ProblemMatcher matches an error.
@@ -66,16 +72,16 @@ func (m statusProblemMatcher) Status() int {
 // StatusProblemConverter creates a new status problem instance.
 type StatusProblemConverter interface {
 	// NewStatusProblem creates a new status problem instance.
-	NewStatusProblem(ctx context.Context, status int, err error) problems.StatusProblem
+	NewStatusProblem(ctx context.Context, status int, err error) StatusProblem
 }
 
 type defaultProblemConverter struct{}
 
-func (c defaultProblemConverter) NewProblem(_ context.Context, err error) problems.Problem {
+func (c defaultProblemConverter) NewProblem(_ context.Context, err error) interface{} {
 	return problems.NewDetailedProblem(http.StatusInternalServerError, err.Error())
 }
 
-func (c defaultProblemConverter) NewStatusProblem(_ context.Context, status int, err error) problems.StatusProblem {
+func (c defaultProblemConverter) NewStatusProblem(_ context.Context, status int, err error) StatusProblem {
 	return problems.NewDetailedProblem(status, err.Error())
 }
 
@@ -151,7 +157,7 @@ func NewProblemConverter(opts ...ProblemConverterOption) ProblemConverter {
 	return c
 }
 
-func (c problemConverter) NewProblem(ctx context.Context, err error) problems.Problem {
+func (c problemConverter) NewProblem(ctx context.Context, err error) interface{} {
 	for _, matcher := range c.matchers {
 		if matcher.MatchError(err) {
 			if converter, ok := matcher.(ProblemConverter); ok {
