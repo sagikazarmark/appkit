@@ -15,21 +15,15 @@ type ProblemConverter interface {
 	NewProblem(ctx context.Context, err error) interface{}
 }
 
-// ErrorMatcher checks if an error matches a predefined set of conditions.
-type ErrorMatcher interface {
-	// MatchError evaluates the predefined set of conditions for err.
-	MatchError(err error) bool
-}
-
 // StatusProblem is the interface describing a problem with an associated Status code.
 type StatusProblem interface {
 	ProblemStatus() int
 }
 
 // ProblemMatcher matches an error.
-// It is an alias to the ErrorMatcher interface.
 type ProblemMatcher interface {
-	ErrorMatcher
+	// MatchError evaluates the predefined set of conditions for err.
+	MatchError(err error) bool
 }
 
 // StatusProblemMatcher matches an error and returns the appropriate status code for it.
@@ -42,7 +36,7 @@ type StatusProblemMatcher interface {
 
 type statusProblemMatcher struct {
 	status  int
-	matcher ErrorMatcher
+	matcher ProblemMatcher
 }
 
 // NewStatusProblemMatcher returns a new StatusProblemMatcher.
