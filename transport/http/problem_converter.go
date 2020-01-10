@@ -86,33 +86,54 @@ type problemConverter struct {
 	statusProblemConverter StatusProblemConverter
 }
 
-// ProblemConverterConfig configures the ProblemConverter implementation.
-type ProblemConverterConfig struct {
-	// Matchers are used to match errors and create problems.
-	// By default an empty detailed problem is created.
-	// If no matchers match the error (or no matchers are configured) a fallback problem is created/returned.
-	//
-	// If a matcher also implements ProblemConverter it is used instead of the builtin ProblemConverter
-	// for creating the problem instance.
-	//
-	// If a matchers also implements StatusProblemMatcher and StatusProblemConverter
-	// it is used instead of the builtin StatusProblemConverter for creating the problem instance.
-	//
-	// If a matchers also implements StatusProblemMatcher (but not StatusProblemConverter)
-	// the builtin StatusProblemConverter is used for creating the problem instance.
-	Matchers []ProblemMatcher
+// ProblemConverterOption configures a ProblemConverter using the functional options paradigm
+// popularized by Rob Pike and Dave Cheney.
+// If you're unfamiliar with this style, see:
+// - https://commandcenter.blogspot.com/2014/01/self-referential-functions-and-design.html
+// - https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis.
+type ProblemConverterOption interface {
+	apply(c *problemConverter)
+}
 
-	// Problem converters used for converting errors to problems.
-	ProblemConverter       ProblemConverter
-	StatusProblemConverter StatusProblemConverter
+type problemConverterOptionFunc func(*problemConverter)
+
+func (f problemConverterOptionFunc) apply(c *problemConverter) { f(c) }
+
+// WithMatchers configures a ProblemConverter to match errors.
+// By default an empty detailed problem is created.
+// If no matchers match an error (or no matchers are configured) a fallback problem is created/returned.
+//
+// If a matcher also implements ProblemConverter it is used instead of the builtin ProblemConverter
+// for creating the problem instance.
+//
+// If a matcher also implements StatusProblemMatcher
+// the builtin StatusProblemConverter is used for creating the problem instance.
+func WithMatchers(matchers ...ProblemMatcher) ProblemConverterOption {
+	return problemConverterOptionFunc(func(c *problemConverter) {
+		c.matchers = matchers
+	})
+}
+
+// WithProblemConverter configures a ProblemConverter.
+func WithProblemConverter(converter ProblemConverter) ProblemConverterOption {
+	return problemConverterOptionFunc(func(c *problemConverter) {
+		c.problemConverter = converter
+	})
+}
+
+// WithStatusProblemConverter configures a StatusProblemConverter.
+func WithStatusProblemConverter(converter StatusProblemConverter) ProblemConverterOption {
+	return problemConverterOptionFunc(func(c *problemConverter) {
+		c.statusProblemConverter = converter
+	})
 }
 
 // NewProblemConverter returns a new ProblemConverter implementation.
-func NewProblemConverter(config ProblemConverterConfig) ProblemConverter {
-	c := problemConverter{
-		matchers:               config.Matchers,
-		problemConverter:       config.ProblemConverter,
-		statusProblemConverter: config.StatusProblemConverter,
+func NewProblemConverter(opts ...ProblemConverterOption) ProblemConverter {
+	c := problemConverter{}
+
+	for _, opt := range opts {
+		opt.apply(&c)
 	}
 
 	if c.problemConverter == nil {
@@ -128,11 +149,6 @@ func NewProblemConverter(config ProblemConverterConfig) ProblemConverter {
 	}
 
 	return c
-}
-
-// NewDefaultProblemConverter returns a new ProblemConverter implementation with default configuration.
-func NewDefaultProblemConverter() ProblemConverter {
-	return NewProblemConverter(ProblemConverterConfig{})
 }
 
 func (c problemConverter) NewProblem(ctx context.Context, err error) problems.Problem {

@@ -85,74 +85,57 @@ func testProblemEquals(t *testing.T, problem *problems.DefaultProblem, status in
 
 func TestProblemConverter(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
-		tests := []ProblemConverter{
-			NewDefaultProblemConverter(),
-			NewProblemConverter(ProblemConverterConfig{}),
-		}
+		problemConverter := NewProblemConverter()
 
-		for _, problemConverter := range tests {
-			problemConverter := problemConverter
+		problem := problemConverter.NewProblem(context.Background(), errors.New("error")).(*problems.DefaultProblem)
 
-			t.Run("", func(t *testing.T) {
-				problem := problemConverter.NewProblem(context.Background(), errors.New("error")).(*problems.DefaultProblem)
-
-				testProblemEquals(t, problem, http.StatusInternalServerError, "something went wrong")
-			})
-		}
+		testProblemEquals(t, problem, http.StatusInternalServerError, "something went wrong")
 	})
 
 	t.Run("matcher", func(t *testing.T) {
 		err := errors.New("error")
 
 		tests := []struct {
-			config ProblemConverterConfig
-			status int
-			detail string
+			options []ProblemConverterOption
+			status  int
+			detail  string
 		}{
 			{
-				config: ProblemConverterConfig{
-					Matchers: []ProblemMatcher{
-						statusMatcherStub{
-							err:    err,
-							status: http.StatusNotFound,
-						},
-					},
+				options: []ProblemConverterOption{
+					WithMatchers(statusMatcherStub{
+						err:    err,
+						status: http.StatusNotFound,
+					}),
 				},
 				status: http.StatusNotFound,
 				detail: "error",
 			},
 			{
-				config: ProblemConverterConfig{
-					Matchers: []ProblemMatcher{
-						statusMatcherConverterStub{
-							statusMatcherStub: statusMatcherStub{
-								err:    err,
-								status: http.StatusNotFound,
-							},
+				options: []ProblemConverterOption{
+					WithMatchers(statusMatcherConverterStub{
+						statusMatcherStub: statusMatcherStub{
+							err:    err,
+							status: http.StatusNotFound,
 						},
-					},
+					}),
 				},
 				status: http.StatusBadRequest,
 				detail: "custom error",
 			},
 			{
-				config: ProblemConverterConfig{
-					Matchers: []ProblemMatcher{
-						matcherStub{
-							err: err,
-						},
-					},
+				options: []ProblemConverterOption{
+					WithMatchers(matcherStub{
+						err: err,
+					}),
 				},
 				status: http.StatusInternalServerError,
 				detail: "error",
 			},
 			{
-				config: ProblemConverterConfig{
-					Matchers: []ProblemMatcher{
-						matcherConverterStub{
-							err: err,
-						},
-					},
+				options: []ProblemConverterOption{
+					WithMatchers(matcherConverterStub{
+						err: err,
+					}),
 				},
 				status: http.StatusServiceUnavailable,
 				detail: "my error",
@@ -163,7 +146,7 @@ func TestProblemConverter(t *testing.T) {
 			test := test
 
 			t.Run("", func(t *testing.T) {
-				problemConverter := NewProblemConverter(test.config)
+				problemConverter := NewProblemConverter(test.options...)
 
 				problem := problemConverter.NewProblem(context.Background(), err).(*problems.DefaultProblem)
 
@@ -174,13 +157,13 @@ func TestProblemConverter(t *testing.T) {
 }
 
 func ExampleNewProblemConverter() {
-	problemConverter := NewProblemConverter(ProblemConverterConfig{
-		Matchers: []ProblemMatcher{
+	problemConverter := NewProblemConverter(
+		WithMatchers(
 			NewStatusProblemMatcher(http.StatusNotFound, ErrorMatcherFunc(func(err error) bool {
 				return err.Error() == "not found"
 			})),
-		},
-	})
+		),
+	)
 
 	err := errors.New("not found")
 
