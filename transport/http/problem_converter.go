@@ -21,14 +21,6 @@ type ErrorMatcher interface {
 	MatchError(err error) bool
 }
 
-// ErrorMatcherFunc turns a plain function into an ErrorMatcher if it's definition matches the interface.
-type ErrorMatcherFunc func(err error) bool
-
-// MatchError calls the underlying function to check if err matches a certain condition.
-func (fn ErrorMatcherFunc) MatchError(err error) bool {
-	return fn(err)
-}
-
 // StatusProblem is the interface describing a problem with an associated Status code.
 type StatusProblem interface {
 	ProblemStatus() int
