@@ -86,74 +86,57 @@ func testStatusEquals(t *testing.T, s *status.Status, code codes.Code, message s
 
 func TestStatusConverter(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
-		tests := []StatusConverter{
-			NewDefaultStatusConverter(),
-			NewStatusConverter(StatusConverterConfig{}),
-		}
+		statusConverter := NewStatusConverter()
 
-		for _, statusConverter := range tests {
-			statusConverter := statusConverter
+		s := statusConverter.NewStatus(context.Background(), errors.New("error"))
 
-			t.Run("", func(t *testing.T) {
-				s := statusConverter.NewStatus(context.Background(), errors.New("error"))
-
-				testStatusEquals(t, s, codes.Internal, "something went wrong")
-			})
-		}
+		testStatusEquals(t, s, codes.Internal, "something went wrong")
 	})
 
 	t.Run("matcher", func(t *testing.T) {
 		err := errors.New("error")
 
 		tests := []struct {
-			config  StatusConverterConfig
+			options []StatusConverterOption
 			code    codes.Code
 			message string
 		}{
 			{
-				config: StatusConverterConfig{
-					Matchers: []StatusMatcher{
-						statusMatcherStub{
-							err:  err,
-							code: codes.NotFound,
-						},
-					},
+				options: []StatusConverterOption{
+					WithMatchers(statusMatcherStub{
+						err:  err,
+						code: codes.NotFound,
+					}),
 				},
 				code:    codes.NotFound,
 				message: "error",
 			},
 			{
-				config: StatusConverterConfig{
-					Matchers: []StatusMatcher{
-						statusMatcherConverterStub{
-							statusMatcherStub: statusMatcherStub{
-								err:  err,
-								code: http.StatusNotFound,
-							},
+				options: []StatusConverterOption{
+					WithMatchers(statusMatcherConverterStub{
+						statusMatcherStub: statusMatcherStub{
+							err:  err,
+							code: http.StatusNotFound,
 						},
-					},
+					}),
 				},
 				code:    codes.InvalidArgument,
 				message: "custom error",
 			},
 			{
-				config: StatusConverterConfig{
-					Matchers: []StatusMatcher{
-						matcherStub{
-							err: err,
-						},
-					},
+				options: []StatusConverterOption{
+					WithMatchers(matcherStub{
+						err: err,
+					}),
 				},
 				code:    codes.Internal,
 				message: "error",
 			},
 			{
-				config: StatusConverterConfig{
-					Matchers: []StatusMatcher{
-						matcherConverterStub{
-							err: err,
-						},
-					},
+				options: []StatusConverterOption{
+					WithMatchers(matcherConverterStub{
+						err: err,
+					}),
 				},
 				code:    codes.Unavailable,
 				message: "my error",
@@ -164,7 +147,7 @@ func TestStatusConverter(t *testing.T) {
 			test := test
 
 			t.Run("", func(t *testing.T) {
-				statusConverter := NewStatusConverter(test.config)
+				statusConverter := NewStatusConverter(test.options...)
 
 				s := statusConverter.NewStatus(context.Background(), err)
 
@@ -175,13 +158,13 @@ func TestStatusConverter(t *testing.T) {
 }
 
 func ExampleNewStatusConverter() {
-	statusConverter := NewStatusConverter(StatusConverterConfig{
-		Matchers: []StatusMatcher{
+	statusConverter := NewStatusConverter(
+		WithMatchers(
 			NewStatusCodeMatcher(codes.NotFound, ErrorMatcherFunc(func(err error) bool {
 				return err.Error() == "not found"
 			})),
-		},
-	})
+		),
+	)
 
 	err := errors.New("not found")
 

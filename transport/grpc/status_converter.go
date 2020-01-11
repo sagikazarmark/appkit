@@ -82,53 +82,72 @@ func (c defaultStatusConverter) NewStatusWithCode(_ context.Context, code codes.
 type statusConverter struct {
 	matchers []StatusMatcher
 
-	statusConverter       StatusConverter
-	statusStatusConverter StatusCodeConverter
+	statusConverter     StatusConverter
+	statusCodeConverter StatusCodeConverter
 }
 
-// StatusConverterConfig configures the StatusConverter implementation.
-type StatusConverterConfig struct {
-	// Matchers are used to match errors and create gRPC statuses.
-	// If no matchers match the error (or no matchers are configured) a fallback code is created/returned.
-	//
-	// If a matcher also implements StatusConverter it is used instead of the builtin StatusConverter
-	// for creating the code.
-	//
-	// If a matchers also implements StatusCodeMatcher
-	// the builtin StatusCodeConverter is used for creating the code.
-	Matchers []StatusMatcher
+// StatusConverterOption configures a StatusConverter using the functional options paradigm
+// popularized by Rob Pike and Dave Cheney.
+// If you're unfamiliar with this style, see:
+// - https://commandcenter.blogspot.com/2014/01/self-referential-functions-and-design.html
+// - https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis.
+type StatusConverterOption interface {
+	apply(c *statusConverter)
+}
 
-	// Status converters used for converting errors to gRPC statuses.
-	StatusConverter     StatusConverter
-	StatusCodeConverter StatusCodeConverter
+type statusConverterOptionFunc func(*statusConverter)
+
+func (f statusConverterOptionFunc) apply(c *statusConverter) { f(c) }
+
+// WithMatchers configures a StatusConverter to match errors.
+// If no matchers match the error (or no matchers are configured) a fallback code is created/returned.
+//
+// If a matcher also implements StatusConverter it is used instead of the builtin StatusConverter
+// for creating the code.
+//
+// If a matchers also implements StatusCodeMatcher
+// the builtin StatusCodeConverter is used for creating the code.
+func WithMatchers(matchers ...StatusMatcher) StatusConverterOption {
+	return statusConverterOptionFunc(func(c *statusConverter) {
+		c.matchers = matchers
+	})
+}
+
+// WithStatusConverter configures a StatusConverter.
+func WithStatusConverter(converter StatusConverter) StatusConverterOption {
+	return statusConverterOptionFunc(func(c *statusConverter) {
+		c.statusConverter = converter
+	})
+}
+
+// WithStatusCodeConverter configures a StatusCodeConverter.
+func WithStatusCodeConverter(converter StatusCodeConverter) StatusConverterOption {
+	return statusConverterOptionFunc(func(c *statusConverter) {
+		c.statusCodeConverter = converter
+	})
 }
 
 // NewStatusConverter returns a new StatusConverter implementation.
-func NewStatusConverter(config StatusConverterConfig) StatusConverter {
-	c := statusConverter{
-		matchers:              config.Matchers,
-		statusConverter:       config.StatusConverter,
-		statusStatusConverter: config.StatusCodeConverter,
+func NewStatusConverter(opts ...StatusConverterOption) StatusConverter {
+	c := statusConverter{}
+
+	for _, opt := range opts {
+		opt.apply(&c)
 	}
 
 	if c.statusConverter == nil {
 		c.statusConverter = defaultStatusConverter{}
 	}
 
-	if c.statusStatusConverter == nil {
+	if c.statusCodeConverter == nil {
 		if spc, ok := c.statusConverter.(StatusCodeConverter); ok {
-			c.statusStatusConverter = spc
+			c.statusCodeConverter = spc
 		} else {
-			c.statusStatusConverter = defaultStatusConverter{}
+			c.statusCodeConverter = defaultStatusConverter{}
 		}
 	}
 
 	return c
-}
-
-// NewDefaultStatusConverter returns a new StatusConverter implementation with default configuration.
-func NewDefaultStatusConverter() StatusConverter {
-	return NewStatusConverter(StatusConverterConfig{})
 }
 
 func (c statusConverter) NewStatus(ctx context.Context, err error) *status.Status {
@@ -139,14 +158,14 @@ func (c statusConverter) NewStatus(ctx context.Context, err error) *status.Statu
 			}
 
 			if statusMatcher, ok := matcher.(StatusCodeMatcher); ok {
-				return c.statusStatusConverter.NewStatusWithCode(ctx, statusMatcher.Code(), err)
+				return c.statusCodeConverter.NewStatusWithCode(ctx, statusMatcher.Code(), err)
 			}
 
 			return c.statusConverter.NewStatus(ctx, err)
 		}
 	}
 
-	return c.statusStatusConverter.NewStatusWithCode(
+	return c.statusCodeConverter.NewStatusWithCode(
 		ctx,
 		codes.Internal,
 		errors.New("something went wrong"),
