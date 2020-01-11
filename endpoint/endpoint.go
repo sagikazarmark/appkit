@@ -18,7 +18,7 @@ func (fn errorMatcherFunc) MatchError(err error) bool {
 	return fn(err)
 }
 
-// ClientErrorMiddleware checks returned errors of the next endpoint.
+// ClientErrorMiddleware checks returned errors of the subsequent endpoint.
 // Errors matching the client error criteria get wrapped in an endpoint.Failer response.
 // An error is considered to be a client error if it implements the following interface:
 //
@@ -31,7 +31,11 @@ func ClientErrorMiddleware(e endpoint.Endpoint) endpoint.Endpoint {
 	return kitxendpoint.FailerMiddleware(errorMatcherFunc(errors.IsClientError))(e)
 }
 
-// LoggingMiddleware logs trace information about every request.
+// LoggingMiddleware logs trace information about every request
+// (beginning of the request, processing time).
+//
+// The logger might extract additional information from the context
+// (correlation ID, operation name, etc).
 func LoggingMiddleware(logger Logger) endpoint.Middleware {
 	return func(e endpoint.Endpoint) endpoint.Endpoint {
 		return func(ctx context.Context, request interface{}) (interface{}, error) {
