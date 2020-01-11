@@ -14,21 +14,15 @@ type StatusConverter interface {
 	NewStatus(ctx context.Context, err error) *status.Status
 }
 
-// ErrorMatcher checks if an error matches a predefined set of conditions.
-type ErrorMatcher interface {
+// StatusMatcher matches an error.
+type StatusMatcher interface {
 	// MatchError evaluates the predefined set of conditions for err.
 	MatchError(err error) bool
 }
 
-// StatusMatcher matches an error.
-// It is an alias to the ErrorMatcher interface.
-type StatusMatcher interface {
-	ErrorMatcher
-}
-
 // StatusCodeMatcher matches an error and returns the appropriate code code for it.
 type StatusCodeMatcher interface {
-	ErrorMatcher
+	StatusMatcher
 
 	// Code returns the gRPC code code.
 	Code() codes.Code
@@ -36,11 +30,11 @@ type StatusCodeMatcher interface {
 
 type statusMatcher struct {
 	code    codes.Code
-	matcher ErrorMatcher
+	matcher StatusMatcher
 }
 
 // NewStatusCodeMatcher returns a new StatusCodeMatcher.
-func NewStatusCodeMatcher(code codes.Code, matcher ErrorMatcher) StatusCodeMatcher {
+func NewStatusCodeMatcher(code codes.Code, matcher StatusMatcher) StatusCodeMatcher {
 	return statusMatcher{
 		code:    code,
 		matcher: matcher,
