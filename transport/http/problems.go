@@ -11,8 +11,8 @@ import (
 // DefaultProblemMatchers is a list of default ProblemMatchers.
 // nolint: gochecknoglobals
 var DefaultProblemMatchers = []kitxhttp.ProblemMatcher{
-	kitxhttp.NewStatusProblemMatcher(http.StatusNotFound, kitxhttp.ErrorMatcherFunc(errors.IsNotFoundError)),
-	kitxhttp.NewStatusProblemMatcher(http.StatusUnprocessableEntity, kitxhttp.ErrorMatcherFunc(errors.IsValidationError)),
-	kitxhttp.NewStatusProblemMatcher(http.StatusBadRequest, kitxhttp.ErrorMatcherFunc(errors.IsBadRequestError)),
-	kitxhttp.NewStatusProblemMatcher(http.StatusConflict, kitxhttp.ErrorMatcherFunc(errors.IsConflictError)),
+	kitxhttp.NewStatusProblemMatcher(http.StatusNotFound, errors.NotFoundErrorMatcher()),
+	kitxhttp.NewStatusProblemMatcher(http.StatusUnprocessableEntity, errors.ValidationErrorMatcher()),
+	kitxhttp.NewStatusProblemMatcher(http.StatusBadRequest, errors.BadRequestErrorMatcher()),
+	kitxhttp.NewStatusProblemMatcher(http.StatusConflict, errors.ConflictErrorMatcher()),
 }
