@@ -41,20 +41,18 @@ type StatusProblemMatcher interface {
 }
 
 type statusProblemMatcher struct {
-	status  int
-	matcher ProblemMatcher
+	ProblemMatcher
+
+	status int
 }
 
 // NewStatusProblemMatcher returns a new StatusProblemMatcher.
 func NewStatusProblemMatcher(status int, matcher ProblemMatcher) StatusProblemMatcher {
 	return statusProblemMatcher{
-		status:  status,
-		matcher: matcher,
-	}
-}
+		ProblemMatcher: matcher,
 
-func (m statusProblemMatcher) MatchError(err error) bool {
-	return m.matcher.MatchError(err)
+		status: status,
+	}
 }
 
 func (m statusProblemMatcher) Status() int {

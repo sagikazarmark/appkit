@@ -33,20 +33,18 @@ type StatusCodeMatcher interface {
 }
 
 type statusMatcher struct {
-	code    codes.Code
-	matcher StatusMatcher
+	StatusMatcher
+
+	code codes.Code
 }
 
 // NewStatusCodeMatcher returns a new StatusCodeMatcher.
 func NewStatusCodeMatcher(code codes.Code, matcher StatusMatcher) StatusCodeMatcher {
 	return statusMatcher{
-		code:    code,
-		matcher: matcher,
-	}
-}
+		StatusMatcher: matcher,
 
-func (m statusMatcher) MatchError(err error) bool {
-	return m.matcher.MatchError(err)
+		code: code,
+	}
 }
 
 func (m statusMatcher) Code() codes.Code {
