@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/moogar0880/problems"
-	kitxhttp "github.com/sagikazarmark/kitx/transport/http"
 )
 
 type notFoundStub struct{}
@@ -73,9 +72,7 @@ func TestDefaultProblemMatchers(t *testing.T) {
 		},
 	}
 
-	converter := kitxhttp.NewProblemConverter(kitxhttp.ProblemConverterConfig{
-		Matchers: DefaultProblemMatchers,
-	})
+	converter := NewProblemConverter(WithProblemMatchers(DefaultProblemMatchers...))
 
 	for _, test := range tests {
 		test := test
