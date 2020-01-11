@@ -28,7 +28,7 @@ type StatusMatcher interface {
 type StatusCodeMatcher interface {
 	StatusMatcher
 
-	// Code returns the gRPC code code.
+	// Code returns the gRPC status code.
 	Code() codes.Code
 }
 
@@ -91,10 +91,10 @@ func (f statusConverterOptionFunc) apply(c *statusConverter) { f(c) }
 // If no matchers match the error (or no matchers are configured) a status with Internal code is returned.
 //
 // If a matcher also implements StatusConverter it is used instead of the builtin StatusConverter
-// for creating the code.
+// for creating the status.
 //
 // If a matchers also implements StatusCodeMatcher
-// the builtin StatusCodeConverter is used for creating the code.
+// the builtin StatusCodeConverter is used for creating the status.
 func WithStatusMatchers(matchers ...StatusMatcher) StatusConverterOption {
 	return statusConverterOptionFunc(func(c *statusConverter) {
 		c.matchers = matchers
