@@ -103,7 +103,7 @@ func TestStatusConverter(t *testing.T) {
 		}{
 			{
 				options: []StatusConverterOption{
-					WithMatchers(statusMatcherStub{
+					WithStatusMatchers(statusMatcherStub{
 						err:  err,
 						code: codes.NotFound,
 					}),
@@ -113,7 +113,7 @@ func TestStatusConverter(t *testing.T) {
 			},
 			{
 				options: []StatusConverterOption{
-					WithMatchers(statusMatcherConverterStub{
+					WithStatusMatchers(statusMatcherConverterStub{
 						statusMatcherStub: statusMatcherStub{
 							err:  err,
 							code: http.StatusNotFound,
@@ -125,7 +125,7 @@ func TestStatusConverter(t *testing.T) {
 			},
 			{
 				options: []StatusConverterOption{
-					WithMatchers(matcherStub{
+					WithStatusMatchers(matcherStub{
 						err: err,
 					}),
 				},
@@ -134,7 +134,7 @@ func TestStatusConverter(t *testing.T) {
 			},
 			{
 				options: []StatusConverterOption{
-					WithMatchers(matcherConverterStub{
+					WithStatusMatchers(matcherConverterStub{
 						err: err,
 					}),
 				},
@@ -167,7 +167,7 @@ func (fn ErrorMatcherFunc) MatchError(err error) bool {
 
 func ExampleNewStatusConverter() {
 	statusConverter := NewStatusConverter(
-		WithMatchers(
+		WithStatusMatchers(
 			NewStatusCodeMatcher(codes.NotFound, ErrorMatcherFunc(func(err error) bool {
 				return err.Error() == "not found"
 			})),

@@ -8,19 +8,23 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// StatusConverter creates a new gRPC Status from an error.
+// StatusConverter converts an error to gRPC Status.
 type StatusConverter interface {
 	// NewStatus creates a new gRPC Status from an error.
 	NewStatus(ctx context.Context, err error) *status.Status
 }
 
 // StatusMatcher matches an error.
+// A StatusMatcher usually also implements one of the following interfaces:
+//
+// - StatusCodeMatcher to indicate a gRPC status code for an error
+// - StatusConverter if a matched error requires special conversion logic
 type StatusMatcher interface {
 	// MatchError evaluates the predefined set of conditions for err.
 	MatchError(err error) bool
 }
 
-// StatusCodeMatcher matches an error and returns the appropriate code code for it.
+// StatusCodeMatcher matches an error and returns the appropriate status code for it.
 type StatusCodeMatcher interface {
 	StatusMatcher
 
@@ -49,9 +53,9 @@ func (m statusMatcher) Code() codes.Code {
 	return m.code
 }
 
-// StatusCodeConverter creates a new gRPC code with a code from an error.
+// StatusCodeConverter converts an error to a gRPC status.
 type StatusCodeConverter interface {
-	// NewStatusWithCode creates a new gRPC code with a code from an error.
+	// NewStatusWithCode creates a new gRPC status with a code from an error.
 	NewStatusWithCode(ctx context.Context, code codes.Code, err error) *status.Status
 }
 
@@ -85,15 +89,15 @@ type statusConverterOptionFunc func(*statusConverter)
 
 func (f statusConverterOptionFunc) apply(c *statusConverter) { f(c) }
 
-// WithMatchers configures a StatusConverter to match errors.
-// If no matchers match the error (or no matchers are configured) a fallback code is created/returned.
+// WithStatusMatchers configures a StatusConverter to match errors.
+// If no matchers match the error (or no matchers are configured) a status with Internal code is returned.
 //
 // If a matcher also implements StatusConverter it is used instead of the builtin StatusConverter
 // for creating the code.
 //
 // If a matchers also implements StatusCodeMatcher
 // the builtin StatusCodeConverter is used for creating the code.
-func WithMatchers(matchers ...StatusMatcher) StatusConverterOption {
+func WithStatusMatchers(matchers ...StatusMatcher) StatusConverterOption {
 	return statusConverterOptionFunc(func(c *statusConverter) {
 		c.matchers = matchers
 	})

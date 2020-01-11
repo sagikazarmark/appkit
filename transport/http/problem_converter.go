@@ -8,7 +8,9 @@ import (
 	"github.com/moogar0880/problems"
 )
 
-// ProblemConverter creates a new RFC-7807 Problem from an error.
+// ProblemConverter converts an error to a RFC-7807 Problem.
+//
+// See details at https://tools.ietf.org/html/rfc7807
 type ProblemConverter interface {
 	// NewProblem creates a new RFC-7807 Problem from an error.
 	// A problem can be any structure that marshals to an RFC-7807 compatible JSON/XML structure.
@@ -21,6 +23,10 @@ type StatusProblem interface {
 }
 
 // ProblemMatcher matches an error.
+// A ProblemMatcher usually also implements one of the following interfaces:
+//
+// - StatusProblemMatcher to indicate an HTTP status code for an error
+// - ProblemConverter if a matched error requires special conversion logic
 type ProblemMatcher interface {
 	// MatchError evaluates the predefined set of conditions for err.
 	MatchError(err error) bool
@@ -55,9 +61,11 @@ func (m statusProblemMatcher) Status() int {
 	return m.status
 }
 
-// StatusProblemConverter creates a new status problem instance.
+// StatusProblemConverter converts an error to a RFC-7807 Problem.
+//
+// See details at https://tools.ietf.org/html/rfc7807
 type StatusProblemConverter interface {
-	// NewStatusProblem creates a new status problem instance.
+	// NewStatusProblem creates a new RFC-7807 Problem with a status code.
 	NewStatusProblem(ctx context.Context, status int, err error) StatusProblem
 }
 
@@ -91,16 +99,16 @@ type problemConverterOptionFunc func(*problemConverter)
 
 func (f problemConverterOptionFunc) apply(c *problemConverter) { f(c) }
 
-// WithMatchers configures a ProblemConverter to match errors.
-// By default an empty detailed problem is created.
-// If no matchers match an error (or no matchers are configured) a fallback problem is created/returned.
+// WithProblemMatchers configures a ProblemConverter to match errors.
+// By default an empty problem is created.
+// If no matchers match an error (or no matchers are configured) an HTTP 500 problem is returned.
 //
 // If a matcher also implements ProblemConverter it is used instead of the builtin ProblemConverter
-// for creating the problem instance.
+// for creating the problem.
 //
 // If a matcher also implements StatusProblemMatcher
-// the builtin StatusProblemConverter is used for creating the problem instance.
-func WithMatchers(matchers ...ProblemMatcher) ProblemConverterOption {
+// the builtin StatusProblemConverter is used for creating the problem.
+func WithProblemMatchers(matchers ...ProblemMatcher) ProblemConverterOption {
 	return problemConverterOptionFunc(func(c *problemConverter) {
 		c.matchers = matchers
 	})
