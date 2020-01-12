@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.1.0] - 2020-01-12
 
+- Initial release
 
 
 [Unreleased]: https://github.com/sagikazarmark/appkit/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/sagikazarmark/appkit/compare/v0.0.0...v0.1.0
