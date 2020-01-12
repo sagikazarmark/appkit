@@ -58,7 +58,7 @@ func TestDefaultStatusMatchers(t *testing.T) {
 		},
 	}
 
-	converter := NewStatusConverter(WithStatusMatchers(DefaultStatusMatchers...))
+	converter := NewDefaultStatusConverter()
 
 	for _, test := range tests {
 		test := test
@@ -96,7 +96,7 @@ func (validationWithViolationsStub) Violations() map[string][]string {
 }
 
 func TestDefaultStatusMatchers_ValidationWithViolations(t *testing.T) {
-	converter := NewStatusConverter(WithStatusMatchers(DefaultStatusMatchers...))
+	converter := NewDefaultStatusConverter()
 
 	err := validationWithViolationsStub{}
 

@@ -72,7 +72,7 @@ func TestDefaultProblemMatchers(t *testing.T) {
 		},
 	}
 
-	converter := NewProblemConverter(WithProblemMatchers(DefaultProblemMatchers...))
+	converter := NewDefaultProblemConverter()
 
 	for _, test := range tests {
 		test := test
@@ -110,7 +110,7 @@ func (validationWithViolationsStub) Violations() map[string][]string {
 }
 
 func TestDefaultProblemMatchers_ValidationWithViolations(t *testing.T) {
-	converter := NewProblemConverter(WithProblemMatchers(DefaultProblemMatchers...))
+	converter := NewDefaultProblemConverter()
 
 	err := validationWithViolationsStub{}
 

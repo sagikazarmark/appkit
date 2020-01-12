@@ -164,3 +164,10 @@ func (c statusConverter) NewStatus(ctx context.Context, err error) *status.Statu
 		errors.New("something went wrong"),
 	)
 }
+
+// NewStatusConverter returns a new StatusConverter implementation populated with default status matchers.
+func NewDefaultStatusConverter(opts ...StatusConverterOption) StatusConverter {
+	opts = append([]StatusConverterOption{WithStatusMatchers(DefaultStatusMatchers...)}, opts...)
+
+	return NewStatusConverter(opts...)
+}

@@ -175,3 +175,10 @@ func (c problemConverter) NewProblem(ctx context.Context, err error) interface{}
 		errors.New("something went wrong"),
 	)
 }
+
+// NewProblemConverter returns a new ProblemConverter implementation populated with default problem matchers.
+func NewDefaultProblemConverter(opts ...ProblemConverterOption) ProblemConverter {
+	opts = append([]ProblemConverterOption{WithProblemMatchers(DefaultProblemMatchers...)}, opts...)
+
+	return NewProblemConverter(opts...)
+}
