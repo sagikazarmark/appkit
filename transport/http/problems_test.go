@@ -90,3 +90,41 @@ func TestDefaultProblemMatchers(t *testing.T) {
 		})
 	}
 }
+
+type validationWithViolationsStub struct{}
+
+func (validationWithViolationsStub) Error() string {
+	return "validation"
+}
+
+func (validationWithViolationsStub) Validation() bool {
+	return true
+}
+
+func (validationWithViolationsStub) Violations() map[string][]string {
+	return map[string][]string{
+		"field": {
+			"violation",
+		},
+	}
+}
+
+func TestDefaultProblemMatchers_ValidationWithViolations(t *testing.T) {
+	converter := NewProblemConverter(WithProblemMatchers(DefaultProblemMatchers...))
+
+	err := validationWithViolationsStub{}
+
+	problem := converter.NewProblem(context.Background(), err).(*ValidationProblem)
+
+	if want, have := http.StatusUnprocessableEntity, problem.Status; want != have {
+		t.Errorf("unexpected status\nexpected: %d\nactual:   %d", want, have)
+	}
+
+	if want, have := err.Error(), problem.Detail; want != have {
+		t.Errorf("unexpected detail\nexpected: %s\nactual:   %s", want, have)
+	}
+
+	if want, have := "violation", problem.Violations["field"][0]; want != have {
+		t.Errorf("unexpected violations\nexpected: %v\nactual:   %v", err.Violations(), problem.Violations)
+	}
+}

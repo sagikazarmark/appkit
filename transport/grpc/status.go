@@ -10,6 +10,6 @@ import (
 // nolint: gochecknoglobals
 var DefaultStatusMatchers = []StatusMatcher{
 	NewStatusCodeMatcher(codes.NotFound, errors.IsNotFoundError),
-	NewStatusCodeMatcher(codes.InvalidArgument, errors.IsValidationError),
+	NewValidationStatusMatcher(),
 	NewStatusCodeMatcher(codes.FailedPrecondition, errors.IsConflictError),
 }
