@@ -10,16 +10,8 @@ import (
 	"github.com/moogar0880/problems"
 )
 
-type errorMatcherStub struct {
-	match bool
-}
-
-func (e errorMatcherStub) MatchError(_ error) bool {
-	return e.match
-}
-
 func TestNewStatusProblemMatcher(t *testing.T) {
-	matcher := NewStatusProblemMatcher(http.StatusNotFound, errorMatcherStub{true})
+	matcher := NewStatusProblemMatcher(http.StatusNotFound, func(err error) bool { return true })
 
 	if !matcher.MatchError(errors.New("error")) {
 		t.Error("error is supposed to be matched")
@@ -156,20 +148,10 @@ func TestProblemConverter(t *testing.T) {
 	})
 }
 
-// ErrorMatcherFunc turns a plain function into an ErrorMatcher if it's definition matches the interface.
-type ErrorMatcherFunc func(err error) bool
-
-// MatchError calls the underlying function to check if err matches a certain condition.
-func (fn ErrorMatcherFunc) MatchError(err error) bool {
-	return fn(err)
-}
-
 func ExampleNewProblemConverter() {
 	problemConverter := NewProblemConverter(
 		WithProblemMatchers(
-			NewStatusProblemMatcher(http.StatusNotFound, ErrorMatcherFunc(func(err error) bool {
-				return err.Error() == "not found"
-			})),
+			NewStatusProblemMatcher(http.StatusNotFound, func(err error) bool { return err.Error() == "not found" }),
 		),
 	)
 

@@ -9,8 +9,8 @@ import (
 // DefaultProblemMatchers is a list of default ProblemMatchers.
 // nolint: gochecknoglobals
 var DefaultProblemMatchers = []ProblemMatcher{
-	NewStatusProblemMatcher(http.StatusNotFound, errors.NotFoundErrorMatcher()),
-	NewStatusProblemMatcher(http.StatusUnprocessableEntity, errors.ValidationErrorMatcher()),
-	NewStatusProblemMatcher(http.StatusBadRequest, errors.BadRequestErrorMatcher()),
-	NewStatusProblemMatcher(http.StatusConflict, errors.ConflictErrorMatcher()),
+	NewStatusProblemMatcher(http.StatusNotFound, errors.IsNotFoundError),
+	NewStatusProblemMatcher(http.StatusUnprocessableEntity, errors.IsValidationError),
+	NewStatusProblemMatcher(http.StatusBadRequest, errors.IsBadRequestError),
+	NewStatusProblemMatcher(http.StatusConflict, errors.IsConflictError),
 }

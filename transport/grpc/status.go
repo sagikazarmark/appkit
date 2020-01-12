@@ -9,7 +9,7 @@ import (
 // DefaultStatusMatchers is a list of default StatusMatchers.
 // nolint: gochecknoglobals
 var DefaultStatusMatchers = []StatusMatcher{
-	NewStatusCodeMatcher(codes.NotFound, errors.NotFoundErrorMatcher()),
-	NewStatusCodeMatcher(codes.InvalidArgument, errors.ValidationErrorMatcher()),
-	NewStatusCodeMatcher(codes.FailedPrecondition, errors.ConflictErrorMatcher()),
+	NewStatusCodeMatcher(codes.NotFound, errors.IsNotFoundError),
+	NewStatusCodeMatcher(codes.InvalidArgument, errors.IsValidationError),
+	NewStatusCodeMatcher(codes.FailedPrecondition, errors.IsConflictError),
 }

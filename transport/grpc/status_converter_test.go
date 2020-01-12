@@ -11,16 +11,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type errorMatcherStub struct {
-	match bool
-}
-
-func (e errorMatcherStub) MatchError(_ error) bool {
-	return e.match
-}
-
 func TestNewStatusCodeMatcher(t *testing.T) {
-	matcher := NewStatusCodeMatcher(codes.NotFound, errorMatcherStub{true})
+	matcher := NewStatusCodeMatcher(codes.NotFound, func(err error) bool { return true })
 
 	if !matcher.MatchError(errors.New("error")) {
 		t.Error("error is supposed to be matched")
@@ -157,20 +149,10 @@ func TestStatusConverter(t *testing.T) {
 	})
 }
 
-// ErrorMatcherFunc turns a plain function into an ErrorMatcher if it's definition matches the interface.
-type ErrorMatcherFunc func(err error) bool
-
-// MatchError calls the underlying function to check if err matches a certain condition.
-func (fn ErrorMatcherFunc) MatchError(err error) bool {
-	return fn(err)
-}
-
 func ExampleNewStatusConverter() {
 	statusConverter := NewStatusConverter(
 		WithStatusMatchers(
-			NewStatusCodeMatcher(codes.NotFound, ErrorMatcherFunc(func(err error) bool {
-				return err.Error() == "not found"
-			})),
+			NewStatusCodeMatcher(codes.NotFound, func(err error) bool { return err.Error() == "not found" }),
 		),
 	)
 

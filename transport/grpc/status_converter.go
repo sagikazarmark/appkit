@@ -33,18 +33,23 @@ type StatusCodeMatcher interface {
 }
 
 type statusMatcher struct {
-	StatusMatcher
-
-	code codes.Code
+	errorMatcher ErrorMatcher
+	code         codes.Code
 }
 
-// NewStatusCodeMatcher returns a new StatusCodeMatcher.
-func NewStatusCodeMatcher(code codes.Code, matcher StatusMatcher) StatusCodeMatcher {
-	return statusMatcher{
-		StatusMatcher: matcher,
+// ErrorMatcher checks if an error matches a certain condition.
+type ErrorMatcher func(err error) bool
 
-		code: code,
+// NewStatusCodeMatcher returns a new StatusCodeMatcher.
+func NewStatusCodeMatcher(code codes.Code, errorMatcher ErrorMatcher) StatusCodeMatcher {
+	return statusMatcher{
+		errorMatcher: errorMatcher,
+		code:         code,
 	}
+}
+
+func (m statusMatcher) MatchError(err error) bool {
+	return m.errorMatcher(err)
 }
 
 func (m statusMatcher) Code() codes.Code {
