@@ -5,10 +5,17 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/endpoint"
-	kitxendpoint "github.com/sagikazarmark/kitx/endpoint"
 
 	"github.com/sagikazarmark/appkit/errors"
 )
+
+type failer struct {
+	err error
+}
+
+func (f failer) Failed() error {
+	return f.err
+}
 
 // ClientErrorMiddleware checks returned errors of the subsequent endpoint.
 // Errors matching the client error criteria get wrapped in an endpoint.Failer response.
@@ -20,7 +27,16 @@ import (
 //
 // and `ClientError` returns true.
 func ClientErrorMiddleware(e endpoint.Endpoint) endpoint.Endpoint {
-	return kitxendpoint.FailerMiddleware(errors.ClientErrorMatcher())(e)
+	return func(e endpoint.Endpoint) endpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (interface{}, error) {
+			resp, err := e(ctx, request)
+			if err != nil && errors.IsClientError(err) {
+				return failer{err}, nil
+			}
+
+			return resp, err
+		}
+	}(e)
 }
 
 // LoggingMiddleware logs trace information about every request
