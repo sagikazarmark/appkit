@@ -50,31 +50,6 @@ func TestIsClientError(t *testing.T) {
 	})
 }
 
-func TestClientErrorMatcher(t *testing.T) {
-	t.Run("ClientError", func(t *testing.T) {
-		if !ClientErrorMatcher().MatchError(clientErrorStub{}) {
-			t.Error("error is supposed to be a ClientError")
-		}
-	})
-
-	t.Run("NonClientError", func(t *testing.T) {
-		tests := []error{
-			errors.New("error"),
-			nonClientErrorStub{},
-		}
-
-		for _, err := range tests {
-			err := err
-
-			t.Run("", func(t *testing.T) {
-				if ClientErrorMatcher().MatchError(err) {
-					t.Error("error is NOT supposed to be a ClientError")
-				}
-			})
-		}
-	})
-}
-
 type notFoundStub struct{}
 
 func (notFoundStub) Error() string {
@@ -114,31 +89,6 @@ func TestIsNotFoundError(t *testing.T) {
 			t.Run("", func(t *testing.T) {
 				if IsNotFoundError(err) {
 					t.Error("error is NOT supposed to be a NotFound error")
-				}
-			})
-		}
-	})
-}
-
-func TestNotFoundErrorMatcher(t *testing.T) {
-	t.Run("NotFoundError", func(t *testing.T) {
-		if !NotFoundErrorMatcher().MatchError(notFoundStub{}) {
-			t.Error("error is supposed to be a NotFoundError")
-		}
-	})
-
-	t.Run("NonNotFoundError", func(t *testing.T) {
-		tests := []error{
-			errors.New("error"),
-			nonNotFoundStub{},
-		}
-
-		for _, err := range tests {
-			err := err
-
-			t.Run("", func(t *testing.T) {
-				if NotFoundErrorMatcher().MatchError(err) {
-					t.Error("error is NOT supposed to be a NotFoundError")
 				}
 			})
 		}
@@ -190,31 +140,6 @@ func TestIsValidationError(t *testing.T) {
 	})
 }
 
-func TestValidationErrorMatcher(t *testing.T) {
-	t.Run("ValidationError", func(t *testing.T) {
-		if !ValidationErrorMatcher().MatchError(validationStub{}) {
-			t.Error("error is supposed to be a ValidationError")
-		}
-	})
-
-	t.Run("NonValidationError", func(t *testing.T) {
-		tests := []error{
-			errors.New("error"),
-			nonValidationStub{},
-		}
-
-		for _, err := range tests {
-			err := err
-
-			t.Run("", func(t *testing.T) {
-				if ValidationErrorMatcher().MatchError(err) {
-					t.Error("error is NOT supposed to be a ValidationError")
-				}
-			})
-		}
-	})
-}
-
 type badRequestStub struct{}
 
 func (badRequestStub) Error() string {
@@ -260,31 +185,6 @@ func TestIsBadRequestError(t *testing.T) {
 	})
 }
 
-func TestBadRequestErrorMatcher(t *testing.T) {
-	t.Run("BadRequestError", func(t *testing.T) {
-		if !BadRequestErrorMatcher().MatchError(badRequestStub{}) {
-			t.Error("error is supposed to be a BadRequestError")
-		}
-	})
-
-	t.Run("NonBadRequestError", func(t *testing.T) {
-		tests := []error{
-			errors.New("error"),
-			nonBadRequestStub{},
-		}
-
-		for _, err := range tests {
-			err := err
-
-			t.Run("", func(t *testing.T) {
-				if BadRequestErrorMatcher().MatchError(err) {
-					t.Error("error is NOT supposed to be a BadRequestError")
-				}
-			})
-		}
-	})
-}
-
 type conflictStub struct{}
 
 func (conflictStub) Error() string {
@@ -324,31 +224,6 @@ func TestIsConflictError(t *testing.T) {
 			t.Run("", func(t *testing.T) {
 				if IsConflictError(err) {
 					t.Error("error is NOT supposed to be a Conflict error")
-				}
-			})
-		}
-	})
-}
-
-func TestConflictErrorMatcher(t *testing.T) {
-	t.Run("ConflictError", func(t *testing.T) {
-		if !ConflictErrorMatcher().MatchError(conflictStub{}) {
-			t.Error("error is supposed to be a ConflictError")
-		}
-	})
-
-	t.Run("NonConflictError", func(t *testing.T) {
-		tests := []error{
-			errors.New("error"),
-			nonConflictStub{},
-		}
-
-		for _, err := range tests {
-			err := err
-
-			t.Run("", func(t *testing.T) {
-				if ConflictErrorMatcher().MatchError(err) {
-					t.Error("error is NOT supposed to be a ConflictError")
 				}
 			})
 		}
