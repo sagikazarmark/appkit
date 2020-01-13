@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- GracefulRestart actor
+- gRPC server actor
+
 
 ## [0.2.0] - 2020-01-13
 
