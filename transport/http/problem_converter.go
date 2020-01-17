@@ -103,6 +103,7 @@ type problemConverterOptionFunc func(*problemConverter)
 func (f problemConverterOptionFunc) apply(c *problemConverter) { f(c) }
 
 // WithProblemMatchers configures a ProblemConverter to match errors.
+// Matchers are appended to the existing list of matchers.
 // By default an empty problem is created.
 // If no matchers match an error (or no matchers are configured) an HTTP 500 problem is returned.
 //
@@ -112,6 +113,22 @@ func (f problemConverterOptionFunc) apply(c *problemConverter) { f(c) }
 // If a matcher also implements StatusProblemMatcher
 // the builtin StatusProblemConverter is used for creating the problem.
 func WithProblemMatchers(matchers ...ProblemMatcher) ProblemConverterOption {
+	return problemConverterOptionFunc(func(c *problemConverter) {
+		c.matchers = append(c.matchers, matchers...)
+	})
+}
+
+// SetProblemMatchers configures a ProblemConverter to match errors.
+// Matchers override to the existing list of matchers.
+// By default an empty problem is created.
+// If no matchers match an error (or no matchers are configured) an HTTP 500 problem is returned.
+//
+// If a matcher also implements ProblemConverter it is used instead of the builtin ProblemConverter
+// for creating the problem.
+//
+// If a matcher also implements StatusProblemMatcher
+// the builtin StatusProblemConverter is used for creating the problem.
+func SetProblemMatchers(matchers ...ProblemMatcher) ProblemConverterOption {
 	return problemConverterOptionFunc(func(c *problemConverter) {
 		c.matchers = matchers
 	})
@@ -178,7 +195,5 @@ func (c problemConverter) NewProblem(ctx context.Context, err error) interface{}
 
 // NewProblemConverter returns a new ProblemConverter implementation populated with default problem matchers.
 func NewDefaultProblemConverter(opts ...ProblemConverterOption) ProblemConverter {
-	opts = append([]ProblemConverterOption{WithProblemMatchers(DefaultProblemMatchers...)}, opts...)
-
-	return NewProblemConverter(opts...)
+	return NewProblemConverter(append(opts, WithProblemMatchers(DefaultProblemMatchers...))...)
 }

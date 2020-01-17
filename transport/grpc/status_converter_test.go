@@ -133,6 +133,34 @@ func TestStatusConverter(t *testing.T) {
 				code:    codes.Unavailable,
 				message: "my error",
 			},
+			{ // WithStatusMatchers is supposed to append matchers to the list
+				options: []StatusConverterOption{
+					WithStatusMatchers(statusMatcherStub{
+						err:  err,
+						code: codes.NotFound,
+					}),
+					WithStatusMatchers(statusMatcherStub{
+						err:  err,
+						code: codes.InvalidArgument,
+					}),
+				},
+				code:    codes.NotFound,
+				message: "error",
+			},
+			{ // SetStatusMatchers is supposed to override matchers
+				options: []StatusConverterOption{
+					SetStatusMatchers(statusMatcherStub{
+						err:  err,
+						code: codes.NotFound,
+					}),
+					SetStatusMatchers(statusMatcherStub{
+						err:  err,
+						code: codes.InvalidArgument,
+					}),
+				},
+				code:    codes.InvalidArgument,
+				message: "error",
+			},
 		}
 
 		for _, test := range tests {
