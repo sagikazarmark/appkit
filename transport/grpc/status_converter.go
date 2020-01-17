@@ -107,6 +107,21 @@ func WithStatusMatchers(matchers ...StatusMatcher) StatusConverterOption {
 	})
 }
 
+// SetStatusMatchers configures a StatusConverter to match errors.
+// Matchers override the existing list of matchers.
+// If no matchers match the error (or no matchers are configured) a status with Internal code is returned.
+//
+// If a matcher also implements StatusConverter it is used instead of the builtin StatusConverter
+// for creating the status.
+//
+// If a matchers also implements StatusCodeMatcher
+// the builtin StatusCodeConverter is used for creating the status.
+func SetStatusMatchers(matchers ...StatusMatcher) StatusConverterOption {
+	return statusConverterOptionFunc(func(c *statusConverter) {
+		c.matchers = matchers
+	})
+}
+
 // WithStatusConverter configures a StatusConverter.
 func WithStatusConverter(converter StatusConverter) StatusConverterOption {
 	return statusConverterOptionFunc(func(c *statusConverter) {

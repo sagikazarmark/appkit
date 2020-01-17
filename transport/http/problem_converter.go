@@ -118,6 +118,22 @@ func WithProblemMatchers(matchers ...ProblemMatcher) ProblemConverterOption {
 	})
 }
 
+// SetProblemMatchers configures a ProblemConverter to match errors.
+// Matchers override to the existing list of matchers.
+// By default an empty problem is created.
+// If no matchers match an error (or no matchers are configured) an HTTP 500 problem is returned.
+//
+// If a matcher also implements ProblemConverter it is used instead of the builtin ProblemConverter
+// for creating the problem.
+//
+// If a matcher also implements StatusProblemMatcher
+// the builtin StatusProblemConverter is used for creating the problem.
+func SetProblemMatchers(matchers ...ProblemMatcher) ProblemConverterOption {
+	return problemConverterOptionFunc(func(c *problemConverter) {
+		c.matchers = matchers
+	})
+}
+
 // WithProblemConverter configures a ProblemConverter.
 func WithProblemConverter(converter ProblemConverter) ProblemConverterOption {
 	return problemConverterOptionFunc(func(c *problemConverter) {
