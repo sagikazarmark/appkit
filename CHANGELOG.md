@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `transport/grpc`: `SetStatusMatchers` to override existing matchers
+- `transport/http`: `SetProblemMatchers` to override existing matchers
+
+### Changed
+
+- `transport/grpc`: Default matchers are appended to existing ones
+- `transport/grpc`: `WithStatusMatchers` appends matchers to existing ones
+- `transport/http`: Default matchers are appended to existing ones
+- `transport/http`: `WithProblemMatchers` appends matchers to existing ones
+
 
 ## [0.3.0] - 2020-01-13
 
