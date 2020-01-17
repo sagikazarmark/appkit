@@ -103,6 +103,7 @@ type problemConverterOptionFunc func(*problemConverter)
 func (f problemConverterOptionFunc) apply(c *problemConverter) { f(c) }
 
 // WithProblemMatchers configures a ProblemConverter to match errors.
+// Matchers are appended to the existing list of matchers.
 // By default an empty problem is created.
 // If no matchers match an error (or no matchers are configured) an HTTP 500 problem is returned.
 //
@@ -113,7 +114,7 @@ func (f problemConverterOptionFunc) apply(c *problemConverter) { f(c) }
 // the builtin StatusProblemConverter is used for creating the problem.
 func WithProblemMatchers(matchers ...ProblemMatcher) ProblemConverterOption {
 	return problemConverterOptionFunc(func(c *problemConverter) {
-		c.matchers = matchers
+		c.matchers = append(c.matchers, matchers...)
 	})
 }
 

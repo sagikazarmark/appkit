@@ -93,6 +93,7 @@ type statusConverterOptionFunc func(*statusConverter)
 func (f statusConverterOptionFunc) apply(c *statusConverter) { f(c) }
 
 // WithStatusMatchers configures a StatusConverter to match errors.
+// Matchers are appended to the existing list of matchers.
 // If no matchers match the error (or no matchers are configured) a status with Internal code is returned.
 //
 // If a matcher also implements StatusConverter it is used instead of the builtin StatusConverter
@@ -102,7 +103,7 @@ func (f statusConverterOptionFunc) apply(c *statusConverter) { f(c) }
 // the builtin StatusCodeConverter is used for creating the status.
 func WithStatusMatchers(matchers ...StatusMatcher) StatusConverterOption {
 	return statusConverterOptionFunc(func(c *statusConverter) {
-		c.matchers = matchers
+		c.matchers = append(c.matchers, matchers...)
 	})
 }
 

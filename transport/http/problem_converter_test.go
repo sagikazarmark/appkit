@@ -132,6 +132,20 @@ func TestProblemConverter(t *testing.T) {
 				status: http.StatusServiceUnavailable,
 				detail: "my error",
 			},
+			{ // WithProblemMatchers is supposed to append matchers to the list
+				options: []ProblemConverterOption{
+					WithProblemMatchers(statusMatcherStub{
+						err:    err,
+						status: http.StatusNotFound,
+					}),
+					WithProblemMatchers(statusMatcherStub{
+						err:    err,
+						status: http.StatusBadRequest,
+					}),
+				},
+				status: http.StatusNotFound,
+				detail: "error",
+			},
 		}
 
 		for _, test := range tests {
