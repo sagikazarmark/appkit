@@ -1,6 +1,8 @@
 package run
 
+// ServeLogger logs server start/shutdown events.
 type ServeLogger interface {
+	// Info logs an Info event.
 	Info(msg string, fields ...map[string]interface{})
 }
 
