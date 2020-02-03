@@ -19,18 +19,14 @@ type clientError interface {
 func IsClientError(err error) bool {
 	var e clientError
 
-	if errors.As(err, &e) {
-		return e.ClientError()
-	}
-
-	return false
+	return errors.As(err, &e) && e.ClientError()
 }
 
 type notFound interface {
 	NotFound() bool
 }
 
-// IsNotFoundError checks if an error is related to a resource being not found.
+// IsNotFoundError checks if an error is related to a resource not being found.
 // An error is considered to be a NotFound error if it implements the following interface:
 //
 // 	type notFound interface {
@@ -41,18 +37,14 @@ type notFound interface {
 func IsNotFoundError(err error) bool {
 	var e notFound
 
-	if errors.As(err, &e) {
-		return e.NotFound()
-	}
-
-	return false
+	return errors.As(err, &e) && e.NotFound()
 }
 
 type validation interface {
 	Validation() bool
 }
 
-// IsValidationError checks if an error is related to a resource being not found.
+// IsValidationError checks if an error is related to a resource or request being invalid.
 // An error is considered to be a Validation error if it implements the following interface:
 //
 // 	type validation interface {
@@ -63,18 +55,14 @@ type validation interface {
 func IsValidationError(err error) bool {
 	var e validation
 
-	if errors.As(err, &e) {
-		return e.Validation()
-	}
-
-	return false
+	return errors.As(err, &e) && e.Validation()
 }
 
 type badRequest interface {
 	BadRequest() bool
 }
 
-// IsBadRequestError checks if an error is related to a resource being not found.
+// IsBadRequestError checks if an error is related to a bad request being made.
 // An error is considered to be a BadRequest error if it implements the following interface:
 //
 // 	type badRequest interface {
@@ -85,18 +73,14 @@ type badRequest interface {
 func IsBadRequestError(err error) bool {
 	var e badRequest
 
-	if errors.As(err, &e) {
-		return e.BadRequest()
-	}
-
-	return false
+	return errors.As(err, &e) && e.BadRequest()
 }
 
 type conflict interface {
 	Conflict() bool
 }
 
-// IsConflictError checks if an error is related to a resource being not found.
+// IsConflictError checks if an error is related to a resource conflict.
 // An error is considered to be a Conflict error if it implements the following interface:
 //
 // 	type conflict interface {
@@ -107,9 +91,5 @@ type conflict interface {
 func IsConflictError(err error) bool {
 	var e conflict
 
-	if errors.As(err, &e) {
-		return e.Conflict()
-	}
-
-	return false
+	return errors.As(err, &e) && e.Conflict()
 }
