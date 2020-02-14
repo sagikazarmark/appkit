@@ -4,6 +4,28 @@ import (
 	"errors"
 )
 
+type serviceError interface {
+	ServiceError() bool
+}
+
+// IsServiceError checks if an error should be returned to the client for processing.
+// An error is considered to be a client error if it implements the following interface:
+//
+// 	type serviceError interface {
+// 		ServiceError() bool
+// 	}
+//
+// and `ServiceError` returns true.
+func IsServiceError(err error) bool {
+	var e serviceError
+
+	if errors.As(err, &e) {
+		return e.ServiceError()
+	}
+
+	return false
+}
+
 type clientError interface {
 	ClientError() bool
 }
@@ -16,6 +38,8 @@ type clientError interface {
 // 	}
 //
 // and `ClientError` returns true.
+//
+// Deprecated: use ServiceError instead.
 func IsClientError(err error) bool {
 	var e clientError
 
