@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `IsServiceError` checker function
+- `ServiceErrorMiddleware` endpoint middleware
+
+### Deprecated
+
+- `IsClientError` checker function. Use `IsServiceError` instead.
+- `ClientErrorMiddleware` endpoint middleware. Use `ServiceErrorMiddleware` instead.
+
 
 ## [0.5.0] - 2020-01-22
 
