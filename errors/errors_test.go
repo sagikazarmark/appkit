@@ -5,6 +5,51 @@ import (
 	"testing"
 )
 
+type serviceErrorStub struct{}
+
+func (serviceErrorStub) Error() string {
+	return ""
+}
+
+func (serviceErrorStub) ServiceError() bool {
+	return true
+}
+
+type nonServiceErrorStub struct{}
+
+func (c nonServiceErrorStub) Error() string {
+	return ""
+}
+
+func (c nonServiceErrorStub) ServiceError() bool {
+	return false
+}
+
+func TestIsServiceError(t *testing.T) {
+	t.Run("ServiceError", func(t *testing.T) {
+		if !IsServiceError(serviceErrorStub{}) {
+			t.Error("error is supposed to be a ServiceError")
+		}
+	})
+
+	t.Run("NonServiceError", func(t *testing.T) {
+		tests := []error{
+			errors.New("error"),
+			nonServiceErrorStub{},
+		}
+
+		for _, err := range tests {
+			err := err
+
+			t.Run("", func(t *testing.T) {
+				if IsServiceError(err) {
+					t.Error("error is NOT supposed to be a ServiceError")
+				}
+			})
+		}
+	})
+}
+
 type clientErrorStub struct{}
 
 func (clientErrorStub) Error() string {

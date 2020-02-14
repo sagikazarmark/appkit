@@ -9,6 +9,72 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
+type errorWrapper struct {
+	err error
+}
+
+func (e errorWrapper) Error() string {
+	return "error" // nolint: goconst
+}
+
+func (e errorWrapper) Unwrap() error {
+	return e.err
+}
+
+type serviceErrorStub struct{}
+
+func (serviceErrorStub) Error() string {
+	return "error"
+}
+
+func (serviceErrorStub) ServiceError() bool {
+	return true
+}
+
+// nolint: dupl
+func TestServiceErrorMiddleware(t *testing.T) {
+	t.Run("service_error", func(t *testing.T) {
+		origErr := errorWrapper{serviceErrorStub{}}
+
+		ep := func(ctx context.Context, request interface{}) (interface{}, error) {
+			return nil, origErr
+		}
+
+		ep = ServiceErrorMiddleware(ep)
+
+		resp, err := ep(context.Background(), nil)
+
+		if err != nil {
+			t.Fatal("endpoint is NOT supposed to return an error")
+		}
+
+		failer, ok := resp.(endpoint.Failer)
+		if !ok {
+			t.Fatal("endpoint is supposed to return an endpoint.Failer response")
+		}
+
+		if failer.Failed() != origErr {
+			t.Error("failer is supposed to return the original error")
+		}
+	})
+
+	t.Run("non_client_error", func(t *testing.T) {
+		origErr := errors.New("error")
+
+		ep := func(ctx context.Context, request interface{}) (interface{}, error) {
+			return nil, origErr
+		}
+
+		ep = ServiceErrorMiddleware(ep)
+
+		_, err := ep(context.Background(), nil)
+
+		if !errors.Is(origErr, err) {
+			t.Error("endpoint is NOT supposed to return an endpoint.Failer response")
+		}
+	})
+}
+
 type clientErrorStub struct{}
 
 func (clientErrorStub) Error() string {
@@ -19,18 +85,7 @@ func (clientErrorStub) ClientError() bool {
 	return true
 }
 
-type errorWrapper struct {
-	err error
-}
-
-func (e errorWrapper) Error() string {
-	return "error"
-}
-
-func (e errorWrapper) Unwrap() error {
-	return e.err
-}
-
+// nolint: dupl
 func TestClientErrorMiddleware(t *testing.T) {
 	t.Run("client_error", func(t *testing.T) {
 		origErr := errorWrapper{clientErrorStub{}}

@@ -17,6 +17,28 @@ func (f failer) Failed() error {
 	return f.err
 }
 
+// ServiceErrorMiddleware checks returned errors of the subsequent endpoint.
+// Errors matching the client error criteria get wrapped in an endpoint.Failer response.
+// An error is considered to be a client error if it implements the following interface:
+//
+// 	type serviceError interface {
+// 		ServiceError() bool
+// 	}
+//
+// and `ServiceError` returns true.
+func ServiceErrorMiddleware(e endpoint.Endpoint) endpoint.Endpoint {
+	return func(e endpoint.Endpoint) endpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (interface{}, error) {
+			resp, err := e(ctx, request)
+			if err != nil && errors.IsServiceError(err) {
+				return failer{err}, nil
+			}
+
+			return resp, err
+		}
+	}(e)
+}
+
 // ClientErrorMiddleware checks returned errors of the subsequent endpoint.
 // Errors matching the client error criteria get wrapped in an endpoint.Failer response.
 // An error is considered to be a client error if it implements the following interface:
@@ -26,6 +48,8 @@ func (f failer) Failed() error {
 // 	}
 //
 // and `ClientError` returns true.
+//
+// Deprecated: use ServiceErrorMiddleware instead.
 func ClientErrorMiddleware(e endpoint.Endpoint) endpoint.Endpoint {
 	return func(e endpoint.Endpoint) endpoint.Endpoint {
 		return func(ctx context.Context, request interface{}) (interface{}, error) {
