@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `run`: `CadenceWorker` run function
+
 
 ## [0.7.0] - 2020-02-17
 
