@@ -10,7 +10,7 @@ type CadenceWorker interface {
 }
 
 // CadenceWorkerRun returns an actor, i.e. an execute and interrupt func, that
-// terminates when the underlying gRPC server fails.
+// terminates when the underlying worker fails.
 //
 // Although the Cadence Worker component has a blocking Run function,
 // internally it waits for a SIGTERM signal which does not fit perfectly into run group.
