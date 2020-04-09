@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added:
+
+- `run`: `TemporalWorkerActor` function
+- `buildinfo` package
+
+### Deprecated
+
+- `run`: `CadenceWorkerRun` function. Use `CadenceWorkerActor` instead.
+
 
 ## [0.8.0] - 2020-02-24
 
