@@ -17,8 +17,8 @@ type StatusConverter interface {
 // StatusMatcher matches an error.
 // A StatusMatcher usually also implements one of the following interfaces:
 //
-// - StatusCodeMatcher to indicate a gRPC status code for an error
-// - StatusConverter if a matched error requires special conversion logic
+//	- StatusCodeMatcher to indicate a gRPC status code for an error
+//	- StatusConverter if a matched error requires special conversion logic
 type StatusMatcher interface {
 	// MatchError evaluates the predefined set of conditions for err.
 	MatchError(err error) bool
