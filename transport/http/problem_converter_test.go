@@ -27,7 +27,7 @@ type matcherStub struct {
 }
 
 func (s matcherStub) MatchError(err error) bool {
-	return s.err == err
+	return s.err == err // nolint: errorlint
 }
 
 type matcherConverterStub struct {
@@ -35,7 +35,7 @@ type matcherConverterStub struct {
 }
 
 func (s matcherConverterStub) MatchError(err error) bool {
-	return s.err == err
+	return s.err == err // nolint: errorlint
 }
 
 func (s matcherConverterStub) NewProblem(_ context.Context, _ error) interface{} {
@@ -48,7 +48,7 @@ type statusMatcherStub struct {
 }
 
 func (s statusMatcherStub) MatchError(err error) bool {
-	return s.err == err
+	return s.err == err // nolint: errorlint
 }
 
 func (s statusMatcherStub) Status() int {

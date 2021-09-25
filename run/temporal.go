@@ -19,7 +19,7 @@ type TemporalWorker interface {
 //
 // See https://github.com/temporalio/temporal-go-sdk/issues/94
 func TemporalWorkerActor(worker TemporalWorker) (execute func() error, interrupt func(error)) {
-	var closeCh = make(chan struct{})
+	closeCh := make(chan struct{})
 
 	return func() error {
 			err := worker.Start()

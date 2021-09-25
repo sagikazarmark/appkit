@@ -19,7 +19,7 @@ type CadenceWorker interface {
 //
 // See https://github.com/uber-go/cadence-client/issues/642
 func CadenceWorkerActor(worker CadenceWorker) (execute func() error, interrupt func(error)) {
-	var closeCh = make(chan struct{})
+	closeCh := make(chan struct{})
 
 	return func() error {
 			err := worker.Start()
