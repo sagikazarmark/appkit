@@ -43,7 +43,6 @@ func TestServiceErrorMiddleware(t *testing.T) {
 		ep = ServiceErrorMiddleware(ep)
 
 		resp, err := ep(context.Background(), nil)
-
 		if err != nil {
 			t.Fatal("endpoint is NOT supposed to return an error")
 		}
@@ -53,7 +52,7 @@ func TestServiceErrorMiddleware(t *testing.T) {
 			t.Fatal("endpoint is supposed to return an endpoint.Failer response")
 		}
 
-		if failer.Failed() != origErr {
+		if failer.Failed() != origErr { // nolint: errorlint
 			t.Error("failer is supposed to return the original error")
 		}
 	})
@@ -97,7 +96,6 @@ func TestClientErrorMiddleware(t *testing.T) {
 		ep = ClientErrorMiddleware(ep)
 
 		resp, err := ep(context.Background(), nil)
-
 		if err != nil {
 			t.Fatal("endpoint is NOT supposed to return an error")
 		}
@@ -107,7 +105,7 @@ func TestClientErrorMiddleware(t *testing.T) {
 			t.Fatal("endpoint is supposed to return an endpoint.Failer response")
 		}
 
-		if failer.Failed() != origErr {
+		if failer.Failed() != origErr { // nolint: errorlint
 			t.Error("failer is supposed to return the original error")
 		}
 	})
