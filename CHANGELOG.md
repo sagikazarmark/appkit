@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 
+## [0.13.0] - 2021-11-13
+
+### Changed
+
+- Updated dependencies
+
+
 ## [0.12.0] - 2021-09-25
 
 ### Changed
@@ -115,7 +122,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Initial release
 
 
-[Unreleased]: https://github.com/sagikazarmark/appkit/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/sagikazarmark/appkit/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/sagikazarmark/appkit/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/sagikazarmark/appkit/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/sagikazarmark/appkit/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/sagikazarmark/appkit/compare/v0.9.0...v0.10.0
