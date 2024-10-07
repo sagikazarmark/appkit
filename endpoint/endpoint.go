@@ -21,9 +21,9 @@ func (f failer) Failed() error {
 // Errors matching the client error criteria get wrapped in an endpoint.Failer response.
 // An error is considered to be a client error if it implements the following interface:
 //
-// 	type serviceError interface {
-// 		ServiceError() bool
-// 	}
+//	type serviceError interface {
+//		ServiceError() bool
+//	}
 //
 // and `ServiceError` returns true.
 func ServiceErrorMiddleware(e endpoint.Endpoint) endpoint.Endpoint {
@@ -43,9 +43,9 @@ func ServiceErrorMiddleware(e endpoint.Endpoint) endpoint.Endpoint {
 // Errors matching the client error criteria get wrapped in an endpoint.Failer response.
 // An error is considered to be a client error if it implements the following interface:
 //
-// 	type clientError interface {
-// 		ClientError() bool
-// 	}
+//	type clientError interface {
+//		ClientError() bool
+//	}
 //
 // and `ClientError` returns true.
 //

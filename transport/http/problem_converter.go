@@ -25,8 +25,8 @@ type StatusProblem interface {
 // ProblemMatcher matches an error.
 // A ProblemMatcher usually also implements one of the following interfaces:
 //
-//	- StatusProblemMatcher to indicate an HTTP status code for an error
-//	- ProblemConverter if a matched error requires special conversion logic
+//   - StatusProblemMatcher to indicate an HTTP status code for an error
+//   - ProblemConverter if a matched error requires special conversion logic
 type ProblemMatcher interface {
 	// MatchError evaluates the predefined set of conditions for err.
 	MatchError(err error) bool
