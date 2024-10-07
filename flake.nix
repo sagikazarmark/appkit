@@ -23,8 +23,8 @@
           buildInputs = devDeps;
         };
 
-        devShells.go1_15 = goShell pkgs.go_1_15;
-        devShells.go1_16 = goShell pkgs.go_1_16;
-        devShells.go1_17 = goShell pkgs.go_1_17;
+        devShells.go1_21 = goShell pkgs.go_1_21;
+        devShells.go1_22 = goShell pkgs.go_1_22;
+        devShells.go1_23 = goShell pkgs.go_1_23;
       });
 }
