@@ -11,9 +11,9 @@ type serviceError interface {
 // IsServiceError checks if an error should be returned to the client for processing.
 // An error is considered to be a client error if it implements the following interface:
 //
-// 	type serviceError interface {
-// 		ServiceError() bool
-// 	}
+//	type serviceError interface {
+//		ServiceError() bool
+//	}
 //
 // and `ServiceError` returns true.
 func IsServiceError(err error) bool {
@@ -33,9 +33,9 @@ type clientError interface {
 // IsClientError checks if an error should be returned to the client for processing.
 // An error is considered to be a client error if it implements the following interface:
 //
-// 	type clientError interface {
-// 		ClientError() bool
-// 	}
+//	type clientError interface {
+//		ClientError() bool
+//	}
 //
 // and `ClientError` returns true.
 //
@@ -53,9 +53,9 @@ type notFound interface {
 // IsNotFoundError checks if an error is related to a resource not being found.
 // An error is considered to be a NotFound error if it implements the following interface:
 //
-// 	type notFound interface {
-// 		NotFound() bool
-// 	}
+//	type notFound interface {
+//		NotFound() bool
+//	}
 //
 // and `NotFound` returns true.
 func IsNotFoundError(err error) bool {
@@ -71,9 +71,9 @@ type validation interface {
 // IsValidationError checks if an error is related to a resource or request being invalid.
 // An error is considered to be a Validation error if it implements the following interface:
 //
-// 	type validation interface {
-// 		Validation() bool
-// 	}
+//	type validation interface {
+//		Validation() bool
+//	}
 //
 // and `Validation` returns true.
 func IsValidationError(err error) bool {
@@ -89,9 +89,9 @@ type badRequest interface {
 // IsBadRequestError checks if an error is related to a bad request being made.
 // An error is considered to be a BadRequest error if it implements the following interface:
 //
-// 	type badRequest interface {
-// 		BadRequest() bool
-// 	}
+//	type badRequest interface {
+//		BadRequest() bool
+//	}
 //
 // and `BadRequest` returns true.
 func IsBadRequestError(err error) bool {
@@ -107,9 +107,9 @@ type conflict interface {
 // IsConflictError checks if an error is related to a resource conflict.
 // An error is considered to be a Conflict error if it implements the following interface:
 //
-// 	type conflict interface {
-// 		Conflict() bool
-// 	}
+//	type conflict interface {
+//		Conflict() bool
+//	}
 //
 // and `Conflict` returns true.
 func IsConflictError(err error) bool {

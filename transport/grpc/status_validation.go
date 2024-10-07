@@ -14,9 +14,10 @@ import (
 
 // NewValidationStatusMatcher returns a status matcher for validation errors.
 // If the returned error matches the following interface, violation info gets attached to the returned status:
-// 	type violationError interface {
-// 		Violations() map[string][]string
-// 	}
+//
+//	type violationError interface {
+//		Violations() map[string][]string
+//	}
 func NewValidationStatusMatcher() StatusMatcher {
 	return validationStatusConverter{}
 }
