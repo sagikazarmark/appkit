@@ -6,7 +6,7 @@ require (
 	github.com/go-kit/kit v0.13.0
 	github.com/moogar0880/problems v0.1.1
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241230172942-26aa7a208def
-	google.golang.org/grpc v1.69.2
+	google.golang.org/grpc v1.69.4
 )
 
 require (
