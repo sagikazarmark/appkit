@@ -1,10 +1,10 @@
 module github.com/sagikazarmark/appkit
 
-go 1.22
+go 1.24
 
 require (
 	github.com/go-kit/kit v0.13.0
-	github.com/moogar0880/problems v0.1.1
+	github.com/moogar0880/problems v1.0.1
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241230172942-26aa7a208def
 	google.golang.org/grpc v1.70.0
 )
